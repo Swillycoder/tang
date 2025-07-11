@@ -138,7 +138,7 @@ class Player {
         this.isJumping = false;
         this.velocityY = 0;
         this.gravity = 0.5;
-        this.jumpStrength = -6.5;
+        this.jumpStrength = -7;
         this.isClimbing = false;
         this.touchingLadder = false;
 
