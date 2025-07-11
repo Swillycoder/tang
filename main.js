@@ -746,7 +746,7 @@ function collideLaserEyes() {
             console.log('laser collision');
             laserEye.projectiles.splice(i, 1);
             i--;
-            playerHealth -= 10;
+            playerHealth -= 6;
         }
     }
 }
