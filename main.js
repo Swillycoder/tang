@@ -23,8 +23,35 @@ const images = {
     climbStop: 'https://raw.githubusercontent.com/Swillycoder/tang/main/climbstop.png',
     orange: 'https://raw.githubusercontent.com/Swillycoder/tang/main/tangpacketsml.png',
     tangGlass: 'https://raw.githubusercontent.com/Swillycoder/tang/main/emptyglasssml.png',
+    tangLogo: 'https://raw.githubusercontent.com/Swillycoder/tang/main/tanglogosml.png',
     will_img: 'https://raw.githubusercontent.com/Swillycoder/tang/main/willanim2.png',
+    ham_img: 'https://raw.githubusercontent.com/Swillycoder/tang/main/hamanim.png',
+    buzz_img: 'https://raw.githubusercontent.com/Swillycoder/tang/main/buzzanim.png',
+    preintro1: 'https://raw.githubusercontent.com/Swillycoder/tang/main/preintroimg1.png',
+    preintro2: 'https://raw.githubusercontent.com/Swillycoder/tang/main/preintroimg2.png',
+    preintro3: 'https://raw.githubusercontent.com/Swillycoder/tang/main/preintroimg3.png',
+    preintrotxt1: 'https://raw.githubusercontent.com/Swillycoder/tang/main/preintrotxt1.png',
+    preintrotxt1a: 'https://raw.githubusercontent.com/Swillycoder/tang/main/preintrotxt1a.png',
+    preintrotxt1b: 'https://raw.githubusercontent.com/Swillycoder/tang/main/preintrotxt1b.png',
+    preintrotxt2: 'https://raw.githubusercontent.com/Swillycoder/tang/main/preintrotxt2.png',
+    preintrotxt2a: 'https://raw.githubusercontent.com/Swillycoder/tang/main/preintrotxt2a.png',
+    preintrotxt2b: 'https://raw.githubusercontent.com/Swillycoder/tang/main/preintrotxt2b.png',
+    img1Lvl1: 'https://raw.githubusercontent.com/Swillycoder/tang/main/level1Img1.png',
+    img2Lvl1: 'https://raw.githubusercontent.com/Swillycoder/tang/main/level1Img2.png',
+    img3Lvl1: 'https://raw.githubusercontent.com/Swillycoder/tang/main/level1Img3.png',
+    img1Lvl2: 'https://raw.githubusercontent.com/Swillycoder/tang/main/level2Img1.png',
+    img2Lvl2: 'https://raw.githubusercontent.com/Swillycoder/tang/main/level2Img2.png',
+    img3Lvl2: 'https://raw.githubusercontent.com/Swillycoder/tang/main/level2Img3.png',
+    imgWin1: 'https://raw.githubusercontent.com/Swillycoder/tang/main/win1.png',
+    imgWin2: 'https://raw.githubusercontent.com/Swillycoder/tang/main/win2.png',
+    imgWin3: 'https://raw.githubusercontent.com/Swillycoder/tang/main/win3.png',
+    imgWin4: 'https://raw.githubusercontent.com/Swillycoder/tang/main/win4.png',
+    imgWin5: 'https://raw.githubusercontent.com/Swillycoder/tang/main/win5.png',
+    gameover_img: 'https://raw.githubusercontent.com/Swillycoder/tang/main/gameover.png',
+    monkeyNut_img:'https://raw.githubusercontent.com/Swillycoder/tang/main/monkeynutanim.png',
+    barrel_img:'https://raw.githubusercontent.com/Swillycoder/tang/main/barrelanim.png',
 };
+
 
 const loadImage = (src) => {
     return new Promise((resolve, reject) => {
@@ -46,6 +73,49 @@ async function loadAllImages(imageSources) {
         }
     }
     return loadedImages;
+}
+
+const audiofiles = {
+    intromusic: 'https://raw.githubusercontent.com/Swillycoder/tang/main/intro.mp3',
+    bossmusic: 'https://raw.githubusercontent.com/Swillycoder/tang/main/boss.mp3',
+    spacemusic: 'https://raw.githubusercontent.com/Swillycoder/tang/main/space.mp3',
+    sfx_jump: 'https://raw.githubusercontent.com/Swillycoder/tang/main/jump.ogg',
+    sfx_collect: 'https://raw.githubusercontent.com/Swillycoder/tang/main/collect.ogg',
+    sfx_water: 'https://raw.githubusercontent.com/Swillycoder/tang/main/water.ogg',
+    voice1: 'https://raw.githubusercontent.com/Swillycoder/tang/main/voice1.ogg',
+    voice2: 'https://raw.githubusercontent.com/Swillycoder/tang/main/voice2.ogg',
+    voice3: 'https://raw.githubusercontent.com/Swillycoder/tang/main/voice3.ogg',
+    voice4: 'https://raw.githubusercontent.com/Swillycoder/tang/main/voice4.ogg',
+    voice5: 'https://raw.githubusercontent.com/Swillycoder/tang/main/voice5.ogg',
+    voice6: 'https://raw.githubusercontent.com/Swillycoder/tang/main/voice6.ogg',
+    voice7: 'https://raw.githubusercontent.com/Swillycoder/tang/main/voice7.ogg',
+    voice8: 'https://raw.githubusercontent.com/Swillycoder/tang/main/voice8.ogg',
+    voice9: 'https://raw.githubusercontent.com/Swillycoder/tang/main/voice9.ogg',
+    voice10: 'https://raw.githubusercontent.com/Swillycoder/tang/main/voice10.ogg',
+}
+
+let loadedAudio;
+
+const loadAudio = (src) => {
+  return new Promise((resolve, reject) => {
+    const audio = new Audio();
+    audio.src = src;
+    audio.oncanplaythrough = () => resolve(audio); // Fully buffered enough to play
+    audio.onerror = () => reject(new Error(`Failed to load audio: ${src}`));
+  });
+};
+
+async function loadAllAudio(audioSources) {
+  const result = {};
+  for (const [key, src] of Object.entries(audioSources)) {
+    try {
+      result[key] = await loadAudio(src);
+      console.log(`${key} audio loaded`);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  return result;
 }
 
 class Player {
@@ -102,6 +172,7 @@ class Player {
             if (withinOX && withinOY) {
                 collectedOrange.push(collectible);
                 collectibles.splice(i, 1);
+                loadedAudio.sfx_collect.play();
                 holdingOrange = true;
             }
         }
@@ -221,6 +292,7 @@ pointToLineDistance(point, lineStart, lineEnd) {
         if (keys.Space && !this.isJumping && !this.isClimbing) {
             this.velocityY = this.jumpStrength;
             this.isJumping = true;
+            loadedAudio.sfx_jump.play();
         }
 
         if (this.isClimbing === false) {
@@ -382,7 +454,7 @@ class Enemy {
             this.frameTimer = 0;
         }
 
-        if (this.frames >= 3) {
+        if (this.frames >= 4) {
             this.frames = 0;
         }
 
@@ -392,41 +464,70 @@ class Enemy {
 }
 
 const barrelPath = [
-    { x: 50, y: 50 },
-    { x: 100, y: 81 },
-    { x: 350, y: 81 },
-    { x: 350, y: 139 },
-    { x: 310, y: 144 },
-    { x: 80, y: 144 },
-    { x: 30, y: 151 },
-    { x: 30, y: 205 },
-    { x: 350, y: 240 },
-    { x: 350, y: 297 },
-    { x: 150, y: 317 },
-    { x: 0, y: 317 },
+    { x: 50-7, y: 50-7 },
+    { x: 100-7, y: 81-7 },
+    { x: 350-7, y: 81-7 },
+    { x: 350-7, y: 139-7 },
+    { x: 310-7, y: 144-7 },
+    { x: 80-7, y: 144-7 },
+    { x: 30-7, y: 151-7 },
+    { x: 30-7, y: 205-7 },
+    { x: 350-7, y: 240-7 },
+    { x: 350-7, y: 297-7 },
+    { x: 150-7, y: 317-7 },
+    { x: 0-7, y: 317-7 },
 ];
 
 class Barrel {
-    constructor() {
+    constructor(width, height,image) {
         this.x = barrelPath[0].x;
         this.y = barrelPath[0].y;
         this.speed = 1;
         this.pathIndex = 1; // start moving toward second point
         this.radius = 8;
-        this.width = 7;
-        this.height = 7;
+        this.width = width;
+        this.height = height;
+        this.image = image;
+        this.frames = 0;
+        this.frameDelay = 10;
+        this.frameTimer = 0;
     }
 
     draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "brown";
-        ctx.fill();
-        ctx.stroke();
+        //ctx.beginPath();
+        //ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        //ctx.strokeStyle = 'green'
+        //ctx.fillStyle = "brown";
+        //ctx.fill();
+        //ctx.stroke();
+        ctx.drawImage(
+            this.image,
+            this.width * this.frames,
+            0,
+            this.width,
+            this.height,
+            this.x,
+            this.y,
+            this.width,
+            this.height
+        );
+
     }
 
     update() {
-        if (this.pathIndex >= barrelPath.length) return; // End of path
+        this.frameTimer++;
+        if (this.frameTimer >= this.frameDelay) {
+            this.frames++;
+            this.frameTimer = 0;
+        }
+
+        if (this.frames >= 4) {
+            this.frames = 0;
+        }
+
+        if (this.pathIndex >= barrelPath.length){
+            return;
+            } // End of path
 
         const target = barrelPath[this.pathIndex];
         const dx = target.x - this.x;
@@ -446,27 +547,168 @@ class Barrel {
 
         this.draw();
     }
-
-
 }
 
+class Nut {
+    constructor (x,y, speed, image, width, height) {
+        this.x = x;
+        this.y = y;
+        this.radius = 7;
+        this.speed = speed;
+        this.width = width;
+        this.height = height;
+        this.image = image;
+        this.frames = 0;
+        this.frameDelay = 10;
+        this.frameTimer = 0;
+    }
+
+    draw () {
+        //ctx.beginPath();
+        //ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2)
+        //ctx.strokeStyle = 'yellow'
+        //ctx.lineWidth = 2;
+        //ctx.stroke();
+        //ctx.drawImage(this.image, this.x, this.y)
+        ctx.drawImage(
+            this.image,
+            this.width * this.frames,
+            0,
+            this.width,
+            this.height,
+            this.x,
+            this.y,
+            this.width,
+            this.height
+        );
+    }
+    update () {
+        this.frameTimer++;
+        if (this.frameTimer >= this.frameDelay) {
+            this.frames++;
+            this.frameTimer = 0;
+        }
+
+        if (this.frames >= 4) {
+            this.frames = 0;
+        }
+        this.x += this.speed;
+
+        if (this.speed > 0 && this.x >= canvas.width + 100) {
+            this.x = -100;
+        }
+        if (this.speed < 0 && this.x <= -20) {
+            this.x = canvas.width + 100;
+        }
+
+        this.draw();
+    }
+}
+
+class LaserEyes{
+    constructor(x,y) {
+        this.x = x;
+        this.y = y;
+        this.projectiles = [];
+        this.lastShotTime = performance.now();
+        this.fireRate = 1000;
+    }
+
+        shoot(player) { 
+        const currentTime = performance.now();
+    
+        if (currentTime - this.lastShotTime >= this.fireRate) {
+            // Calculate direction to player
+            let dx = player.x - this.x;
+            let dy = player.y - this.y;
+            let magnitude = Math.sqrt(dx * dx + dy * dy);
+            let speed = 2; // Adjust speed as needed
+    
+            this.projectiles.push({
+                x: this.x,
+                y: this.y,
+                width: 15,
+                height: 4,
+                velocityX: (dx / magnitude) * speed,
+                velocityY: (dy / magnitude) * speed
+            });
+    
+            this.lastShotTime = currentTime;
+        }
+    }
+    
+    draw() {
+    // Draw projectiles
+    for (let i = 0; i < this.projectiles.length; i++) {
+        const p = this.projectiles[i];
+
+        // Calculate angle of rotation
+        const angle = Math.atan2(p.velocityY, p.velocityX);
+
+        ctx.save();
+        ctx.translate(p.x, p.y); // move origin to projectile center
+        ctx.rotate(angle);
+
+        // Draw projectile at (0, 0), adjusted so it rotates correctly
+        ctx.fillStyle = 'red';
+        ctx.fillRect(0, -p.height / 2, p.width, p.height);
+
+        ctx.restore();
+
+        // Move projectile
+        p.x += p.velocityX;
+        p.y += p.velocityY;
+
+        // Remove if off screen
+        if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height) {
+            this.projectiles.splice(i, 1);
+            i--;
+        }
+    }
+}
+    update(){
+        this.shoot(player);
+        this.draw();
+    }
+}
+
+const keys = {
+    KeyA: false,
+    KeyD: false,
+    KeyP: false,
+    Space: false,
+    Enter: false,
+    ArrowLeft: false,
+    ArrowRight: false,
+    ArrowUp: false,
+    ArrowDown: false,
+};
+
 let score = 0;
-let gameState = "introScreen"
+let gameState = "startScreen"
 let player;
+let laserEye;
 let platforms = [];
 let ladders = [];
+let nuts = [];
 let collectibles = [];
 let collectedOrange = [];
 let holdingOrange = false;
 let loadedImages;
 const tangDrink = new TangDrink(5,262,36,68);
 let enemySprite1;
-let barrels = [new Barrel(7,7)];
+let enemySprite2;
+let enemySprite3;
+let barrels = [];
 let playerHealth = 100
-
-setInterval(() => {
-    barrels.push(new Barrel(7,7));
-}, 5000);
+let laserColliding = false;
+const mouse = {
+    x: 0,
+    y: 0,
+    isDown: false
+};
+let mouseClicked = false;
+let voicePlayed = false;
 
 function isColliding(a, b) {
     return (
@@ -478,19 +720,45 @@ function isColliding(a, b) {
 }
 
 function collideBarrel() {
-    for (let barrel of barrels) {
-        if (isColliding(player, barrel)) {
+    for (let i = barrels.length - 1; i >= 0; i--) {
+        if (isColliding(player, barrels[i])) {
             console.log('collide with barrel!');
+            barrels.splice(i, 1); // remove barrel
+            playerHealth -= 5;
+        }
+    }
+}
+
+function collideNut() {
+    for (let nut of nuts) {
+        if (isColliding(player, nut)) {
+            console.log('collide with nut!');
             playerHealth -= 1;
         }
     }
 }
 
+function collideLaserEyes() {
+    for (let i = 0; i < laserEye.projectiles.length; i++) {
+        const laser = laserEye.projectiles[i];
+
+        if (isColliding(player, laser)) {
+            console.log('laser collision');
+            laserEye.projectiles.splice(i, 1);
+            i--;
+            playerHealth -= 10;
+        }
+    }
+}
+
+
 function collideGlass() {
     if (holdingOrange === true && isColliding(player, tangDrink)) {
-        score += 1
-        console.log('collide!');
-        tangDrink.fillLevel = Math.min(tangDrink.fillLevel + 0.25, 1);
+        score += 25;
+        playerHealth += 15;
+        loadedAudio.sfx_water.play();
+        //console.log('collide!');
+        tangDrink.fillLevel = Math.min(tangDrink.fillLevel + 0.34, 1);
         collectibles.push(new Collectible(90, 0, 36, 36, loadedImages.orange, 'orange'));
 
         if (collectedOrange.length > 0) {
@@ -502,6 +770,9 @@ function collideGlass() {
 }
 
 function gameStats() {
+    //Tang Logo
+    ctx.drawImage(loadedImages.tangLogo, 25, 342)
+
     //Health Bar
     ctx.strokeStyle = 'white';
     ctx.lineWidth = 4;
@@ -517,55 +788,147 @@ function gameStats() {
     ctx.lineWidth = 2;
     ctx.strokeRect(canvas.width/2-15, 347.5, playerHealth, 14)
 
-    ctx.font = '15px Impact';
+    ctx.font = '20px pixelPurl';
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
     ctx.fillText('HEALTH :', canvas.width/2-50, 360);
 
     //Score
-    ctx.font = '15px Impact';
+    ctx.font = '20px pixelPurl';
     ctx.fillStyle = 'white';
     ctx.textAlign = 'center';
     ctx.fillText(`SCORE : ${score}`, canvas.width-60, 360);
 }
 
-const keys = {
-    KeyA: false,
-    KeyD: false,
-    KeyP: false,
-    Space: false,
-    Enter: false,
-    ArrowLeft: false,
-    ArrowRight: false,
-    ArrowUp: false,
-    ArrowDown: false,
-};
+function selectorBox(x, y, width, height, hoverText, changeState) {
+    //ctx.strokeStyle = 'red';
+    //ctx.strokeRect(x, y, width, height); 
+    const isHovering = (
+        mouse.x > x &&
+        mouse.x < x + width &&
+        mouse.y > y &&
+        mouse.y < y + height
+    );
+
+    if (isHovering) {
+        console.log('hover')
+        ctx.fillStyle = 'white';
+        ctx.font = '20px pixelPurl';
+        ctx.fillText(hoverText, mouse.x, mouse.y);
+    }
+
+    if (isHovering && mouse.isDown) {
+        gameState = changeState;
+        mouse.isDown = false;
+        return true;
+    }
+}
+
+setInterval(() => {
+    barrels.push(new Barrel(15,15,loadedImages.barrel_img));
+}, 3000);
 
 function gameLoop() {
-    if (gameState === "introScreen") {
+    if (gameState === "startScreen") {
+        startScreen();
+    } else if (gameState === "preIntroScreen") {
+        preIntroScreen();
+    } else if (gameState === "introScreen") {
         introScreen();
     } else if (gameState === "gameScreen") {
         gameScreen();
+    } else if (gameState === "gameScreen2") {
+        gameScreen2();
+    } else if (gameState === "gameScreen3") {
+        gameScreen3();
     } else if (gameState === "gameOverScreen") {
         gameOverScreen();
+    } else if (gameState === "winScreenLvl1") {
+        winScreenLvl1();
+    } else if (gameState === "winScreenLvl2") {
+        winScreenLvl2();
+    } else if (gameState === "winScreen") {
+        winScreen();
+    } else if (gameState === "endScreen") {
+        endScreen();
     } 
     requestAnimationFrame(gameLoop);
 }
 
-function introScreen() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'black'
-    ctx.fillRect(0,0,canvas.width,canvas.height)
-    ctx.drawImage(loadedImages.intro, 50, 0);
-    ctx.font = '40px Impact'
-    ctx.fillStyle = 'white'
-    ctx.textAlign = 'center'
-    ctx.fillText("DRINK THE", canvas.width/2, 37)
-    ctx.fillText("TANG AID!!!", canvas.width/2, 80)
-    ctx.fillText("HIT ENTER TO PLAY", canvas.width/2, 280)
+
+
+function startScreen() {
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0,0,canvas.width, canvas.height);
+
+    ctx.drawImage(
+        loadedImages.tangLogo,
+        canvas.width / 2 - 50,
+        canvas.height / 2 - 50,
+        100,
+        80
+    );
+    selectorBox(140,140,100,80, 'CLICK TO BEGIN', 'preIntroScreen');
+
+    ctx.font = '20px pixelPurl';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText("Hit ENTER to Begin", canvas.width/2, 350);
+
 }
 
+let introImages;
+let currentFrameIntro = 0;
+let frameCounterIntro = 0;
+const frameDelayIntro = 400; 
+
+function preIntroScreen() {
+    loadedAudio.intromusic.play();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    frameCounterIntro++;
+    if (frameCounterIntro >= frameDelayIntro) {
+        frameCounterIntro = 0;
+        currentFrameIntro = (currentFrameIntro + 1) % introImages.length; // Loop through frames
+    }
+    // Draw current frame
+    ctx.drawImage(introImages[currentFrameIntro], 35, 35);
+
+    ctx.font = '20px pixelPurl';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText("Hit SPACE to Skip", canvas.width/2, 350);
+}
+
+function introScreen() {
+
+    if (!voicePlayed) {
+        voicePlayed = true;
+        loadedAudio.voice7.play();
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(loadedImages.intro, 50, 30);
+    ctx.font = '40px pixelPurl';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText("DRINK THE", canvas.width/2+10, 67);
+    ctx.fillText("TANG AID!!!", canvas.width/2+10, 110);
+    ctx.fillText("HIT ENTER TO PLAY", canvas.width/2 +10, 310);
+}
+
+//LEVEL 1
 function gameScreen() {
+    loadedAudio.bossmusic.play();
+    if (!voicePlayed) {
+        voicePlayed = true;
+        loadedAudio.voice1.play();
+    }
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "rgb(0, 0, 0)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -588,7 +951,7 @@ function gameScreen() {
     player.checkCollectibleCollision(collectibles, collectedOrange);
     tangDrink.draw();
 
-    enemySprite1.update();
+    
 
         // Draw path (for debugging)
 /*
@@ -599,36 +962,311 @@ function gameScreen() {
     }
     ctx.strokeStyle = "lightgray";
     ctx.stroke();
-    */
+*/
 
     // Update and draw barrels
+  
     for (let barrel of barrels) {
         barrel.update();
+        if (barrel.pathIndex >= barrelPath.length){
+            score += 2;
+            barrels.shift();
+        } // End of path
     }
-
+    enemySprite1.update();
     collideBarrel();
     gameStats();
 
     if (playerHealth <= 0) {
         gameState = 'gameOverScreen'
+        loadedAudio.bossmusic.pause();
+        loadedAudio.bossmusic.currentTime = 0;
+        voicePlayed = false;
+    }
+
+    if (tangDrink.fillLevel >= 1) {
+        gameState = 'winScreenLvl1';
+        loadedAudio.bossmusic.pause();
+        loadedAudio.bossmusic.currentTime = 0;
+        voicePlayed = false;
     }
 }
 
+//LEVEL2
+function gameScreen2() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgb(0, 0, 0)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    loadedAudio.bossmusic.play();
+    if (!voicePlayed) {
+        voicePlayed = true;
+        loadedAudio.voice3.play();
+    }
+
+    platforms.forEach(platform => {
+        platform.update();
+    })
+
+    ladders.forEach(ladder => {
+        ladder.draw();
+    })
+
+    collectibles.forEach(collectible => {
+        collectible.draw();
+    })
+
+    nuts.forEach(nut => {
+        nut.update();
+    })
+    
+    player.update(platforms, ladders);
+    collideGlass();
+
+    player.checkCollectibleCollision(collectibles, collectedOrange);
+    tangDrink.draw();
+
+    for (let barrel of barrels) {
+        barrel.update();
+        if (barrel.pathIndex >= barrelPath.length){
+            score += 2;
+            barrels.shift();
+            } // End of path
+    }
+    enemySprite2.update();
+    collideBarrel();
+    collideNut();
+    gameStats();
+
+    if (playerHealth <= 0) {
+        gameState = 'gameOverScreen'
+        loadedAudio.bossmusic.pause();
+        loadedAudio.bossmusic.currentTime = 0;
+        voicePlayed = false;
+    }
+
+    if (tangDrink.fillLevel >= 1) {
+        gameState = 'winScreenLvl2';
+        loadedAudio.bossmusic.pause();
+        loadedAudio.bossmusic.currentTime = 0;
+        voicePlayed = false;
+    }
+}
+
+//LEVEL 3
+function gameScreen3() {
+    loadedAudio.bossmusic.play();
+    if (!voicePlayed) {
+        voicePlayed = true;
+        loadedAudio.voice5.play();
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgb(0, 0, 0)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    platforms.forEach(platform => {
+        platform.update();
+    })
+
+    ladders.forEach(ladder => {
+        ladder.draw();
+    })
+
+    collectibles.forEach(collectible => {
+        collectible.draw();
+    })
+    
+    player.update(platforms, ladders);
+    collideGlass();
+
+    
+
+    player.checkCollectibleCollision(collectibles, collectedOrange);
+    tangDrink.draw();
+
+    for (let barrel of barrels) {
+        barrel.update();
+        if (barrel.pathIndex >= barrelPath.length){
+            score += 2;
+            barrels.shift();
+        } // End of path
+    }
+    enemySprite3.update();
+    
+    laserEye.update();
+
+    collideBarrel();
+    collideLaserEyes();
+    gameStats();
+
+    if (playerHealth <= 0) {
+        gameState = 'gameOverScreen'
+        loadedAudio.bossmusic.pause();
+        loadedAudio.bossmusic.currentTime = 0;
+        voicePlayed = false;
+    }
+
+    if (tangDrink.fillLevel >= 1) {
+        gameState = 'winScreen';
+        loadedAudio.bossmusic.pause();
+        loadedAudio.bossmusic.currentTime = 0;
+        voicePlayed = false;
+    }
+}
 
 function gameOverScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "rgb(231, 12, 12)";
+    ctx.fillStyle = "rgb(0, 0, 0)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.font = '40px Impact'
+    ctx.drawImage(loadedImages.gameover_img,35,35)
+    ctx.font = '20px pixelPurl'
     ctx.fillStyle = 'white'
     ctx.textAlign = 'center'
-    ctx.fillText(`SCORE - ${score}`, canvas.width/2, 100)
-    ctx.fillText("HIT P TO PLAY AGAIN", canvas.width/2, 200)
+    ctx.fillText(`SCORE - ${score}`, canvas.width/2, 120)
+    ctx.fillText("HIT P TO PLAY AGAIN", canvas.width/2, 330)
+
+    selectorBox(115,275,135,30, 'PLAY AGAIN???', 'preIntroScreen')
+
+
+}
+
+let imagesLvl1;
+let currentFrameLvl1 = 0;
+let frameCounterLvl1 = 0;
+const frameDelayLvl1 = 400; 
+
+function winScreenLvl1() {
+    loadedAudio.intromusic.play();
+    if (!voicePlayed) {
+        voicePlayed = true;
+        loadedAudio.voice2.play();
+    }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    if (currentFrameLvl1 < imagesLvl1.length - 1) {
+        frameCounterLvl1++;
+        if (frameCounterLvl1 >= frameDelayLvl1) {
+            frameCounterLvl1 = 0;
+            currentFrameLvl1++;
+        }
+    }
+
+    // Draw current frame
+    ctx.drawImage(imagesLvl1[currentFrameLvl1], 35, 35);
+
+    ctx.font = '20px pixelPurl';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText("Hit SPACE to Skip", canvas.width/2, 350);
+
+}
+
+let imagesLvl2;
+let currentFrameLvl2 = 0;
+let frameCounterLvl2 = 0;
+const frameDelayLvl2 = 400;
+let voicePlayedBuzz = false;
+let voiceCounter = 0;
+
+function winScreenLvl2() {
+    voiceCounter++
+    loadedAudio.intromusic.play();
+
+    if (!voicePlayed && voiceCounter >= 700) {
+        voicePlayed = true;
+        loadedAudio.voice4.play();
+    }
+
+    if (!voicePlayedBuzz &&  voiceCounter >= 900) {
+        voicePlayedBuzz = true;
+        loadedAudio.voice9.play();
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    if (currentFrameLvl2 < imagesLvl2.length - 1) {
+        frameCounterLvl2++;
+        if (frameCounterLvl2 >= frameDelayLvl2) {
+            frameCounterLvl2 = 0;
+            currentFrameLvl2++;
+        }
+    }
+    // Draw current frame
+    ctx.drawImage(imagesLvl2[currentFrameLvl2], 35, 35);
+
+    ctx.font = '20px pixelPurl';
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText("Hit SPACE to Skip", canvas.width/2, 350);
+}
+
+let imagesWin;
+let currentFrameWin = 0;
+let frameCounterWin = 0;
+const frameDelayWin = 400;
+let voiceCounterWin = 0;
+
+function winScreen() {
+    voiceCounterWin++
+    loadedAudio.spacemusic.play();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    if (!voicePlayed && voiceCounterWin >= 750) {
+        voicePlayed = true;
+        loadedAudio.voice6.play();
+    }
+
+    if (!voicePlayedBuzz && voiceCounterWin >= 0) {
+        voicePlayedBuzz = true;
+        loadedAudio.voice10.play();
+    }
+    
+
+    // Always increment frameCounterWin
+    frameCounterWin++;
+
+    // Advance frames if not at the end
+    if (currentFrameWin < imagesWin.length - 1) {
+        if (frameCounterWin >= frameDelayWin) {
+            frameCounterWin = 0;
+            currentFrameWin++;
+        }
+    } else {
+        // On last frame, wait a bit before showing end screen
+        if (frameCounterWin >= frameDelayWin) { // hold last frame longer
+            voiceCounterWin = 0;
+            gameState = 'endScreen';
+            voicePlayed = false;
+            voicePlayedBuzz = false;
+        }
+    }
+
+    // Draw current frame
+    ctx.drawImage(imagesWin[currentFrameWin], 35, 35);
+}
+
+function endScreen () {
+    loadedAudio.spacemusic.play();
+    loadedAudio.voice8.play();
+    ctx.drawImage(loadedImages.imgWin5, 35,35)
+    ctx.font = '30px pixelPurl'
+    ctx.fillStyle = 'white'
+    ctx.textAlign = 'center'
+    ctx.fillText(`${score}`, 243, 188)
+    ctx.fillText('Hit P Key to Play Again', canvas.width/2, canvas.height - 10)
 }
 
 (async () => {
     console.log("Loading images...");
     loadedImages = await loadAllImages(images);
+    loadedAudio = await loadAllAudio(audiofiles)
     console.log("All images loaded!");
 
     player = new Player(50, 290, 36,36, loadedImages.stand_r, loadedImages.stand_l,
@@ -660,35 +1298,121 @@ function gameOverScreen() {
 
         new Platform(150,40,75,15, loadedImages.platform_img,0),
         new Platform(75,40,75,15, loadedImages.platform_img,0),
-    ]
+    ];
 
     ladders = [
         new Ladder(335,237,36,50, loadedImages.ladder),
         new Ladder(5,146,36,50, loadedImages.ladder),
         new Ladder(335,78,36,50, loadedImages.ladder),
         new Ladder(150,24,36,50, loadedImages.ladder),
-    ]
+    ];
 
     collectibles = [
         new Collectible(90,0,36,36, loadedImages.orange, 'orange')
-    ]
+    ];
 
     enemySprite1 = new Enemy(20,18,28,75,loadedImages.will_img);
+    enemySprite2 = new Enemy(5,40,58,50,loadedImages.ham_img);
+    enemySprite3 = new Enemy(20,16,40,75,loadedImages.buzz_img);
+
+    introImages = [loadedImages.preintrotxt1,loadedImages.preintrotxt1a,loadedImages.preintrotxt1b,
+        loadedImages.preintro1, loadedImages.preintro2, loadedImages.preintrotxt2, loadedImages.preintrotxt2a, 
+        loadedImages.preintrotxt2b, loadedImages.preintro3
+    ];
+
+    imagesLvl1 = [loadedImages.img1Lvl1, loadedImages.img2Lvl1, loadedImages.img3Lvl1];
+
+    imagesLvl2 = [loadedImages.img1Lvl2, loadedImages.img2Lvl2, loadedImages.img3Lvl2];
+
+    imagesWin = [loadedImages.imgWin1, loadedImages.imgWin2, loadedImages.imgWin3,
+        loadedImages.imgWin4
+    ];
+
+    nuts = [new Nut(-10, 130, 1, loadedImages.monkeyNut_img, 18,18), 
+        new Nut(canvas.width + 10, 210, -1, loadedImages.monkeyNut_img, 18,18)]
+
+    laserEye = new LaserEyes(35, 30);
+
+    loadedAudio.intromusic.volume = 0.1;
+    loadedAudio.bossmusic.volume = 0.1;
+    loadedAudio.spacemusic.volume = 0.1;
+    loadedAudio.sfx_jump.volume = 0.05;
+    loadedAudio.sfx_water.volume = 0.1;
+    loadedAudio.sfx_collect.volume = 0.1;
+    
     gameLoop();
+
 })();
 
 document.addEventListener('keydown', (e) => {
     if (keys.hasOwnProperty(e.code)) {
         keys[e.code] = true;
     }
+
+    if (gameState === "startScreen") {
+        if (e.code === "Enter") {
+            gameState = "preIntroScreen";
+        }
+    }
+
+    if (gameState === "preIntroScreen") {
+        if (e.code === 'Space') {
+            gameState = 'introScreen'; 
+            loadedAudio.intromusic.pause();
+            loadedAudio.intromusic.currentTime = 0;
+            }
+    }
+
     if (gameState === "introScreen") {
         if (e.code === 'Enter') {
             gameState = 'gameScreen';
+            playerHealth = 100;
+            score = 0;
+            player.x = 50;
+            player.y = 290;
+            barrels = [];
+            collectedOrange = [];
+            tangDrink.fillLevel = 0;
+            voicePlayed = false;
 
         }
     }
 
-    if (gameState === "gameOverScreen") {
+    if (gameState === "winScreenLvl1") {
+        if (e.code === 'Space') {
+            gameState = 'gameScreen2';
+            player.x = 50;
+            player.y = 290;
+            barrels = [];
+            collectedOrange = [];
+            tangDrink.fillLevel = 0;
+            loadedAudio.intromusic.pause();
+            loadedAudio.intromusic.currentTime = 0;
+            voicePlayed = false;
+            currentFrameLvl1 = 0;
+
+        }
+    }
+
+    if (gameState === "winScreenLvl2") {
+        if (e.code === 'Space') {
+            gameState = 'gameScreen3';
+            player.x = 50;
+            player.y = 290;
+            barrels = [];
+            collectedOrange = [];
+            tangDrink.fillLevel = 0;
+            loadedAudio.intromusic.pause();
+            loadedAudio.intromusic.currentTime = 0;
+            voicePlayed = false;
+            voicePlayedBuzz = false;
+            voiceCounter = 0;
+            currentFrameLvl2 = 0;
+
+        }
+    }
+
+    if (gameState === "gameOverScreen" || gameState === 'endScreen') {
         if (e.code === 'KeyP') {
             gameState = 'introScreen';
             playerHealth = 100;
@@ -696,8 +1420,15 @@ document.addEventListener('keydown', (e) => {
             player.x = 50;
             player.y = 290;
             barrels = [];
+            collectedOrange = [];
+            tangDrink.fillLevel = 0;
+            loadedAudio.spacemusic.pause();
+            loadedAudio.spacemusic.currentTime = 0;
+            voicePlayed = false;
+            currentFrameWin = 0;
         }
     }
+    
 });
 
 document.addEventListener('keyup', (e) => {
@@ -710,7 +1441,21 @@ document.addEventListener('keyup', (e) => {
     if (e.code === 'ArrowLeft') {
         player.currentSprite = loadedImages.stand_l;
     }
-    //if (e.code === 'ArrowUp' && player.isClimbing) {
-    //    player.y -= 2
-    //}
 });
+
+canvas.addEventListener('mousemove', function (event) {
+    const rect = canvas.getBoundingClientRect();
+    
+    mouse.x = (event.clientX - rect.left) * (canvas.width / rect.width);
+    mouse.y = (event.clientY - rect.top) * (canvas.height / rect.height);
+});
+
+canvas.addEventListener('mousedown', function () {
+    mouse.isDown = true;
+});
+
+canvas.addEventListener('mouseup', function () {
+    mouse.isDown = false;
+});
+
+//END OF CODE
