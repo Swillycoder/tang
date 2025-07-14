@@ -190,13 +190,11 @@ class Player {
 
         const platformWidth = Math.hypot(end.x - start.x, end.y - start.y);
 
-        // Ensure the player's foot is horizontally "on" the platform segment
         const onPlatform =
             foot.x >= Math.min(start.x, end.x) - 5 &&
             foot.x <= Math.max(start.x, end.x) + 5;
 
         if (distance < 5 && foot.y < closestPoint.y + 5 && onPlatform && this.velocityY >= 0) {
-            // Snap player to the platform
             this.y = closestPoint.y - this.height;
             this.velocityY = 0;
             this.isJumping = false;
@@ -279,7 +277,6 @@ pointToLineDistance(point, lineStart, lineEnd) {
             this.y += this.velocityY;
         }
 
-        // Horizontal movement
         if (keys.ArrowLeft) {
             this.x -= this.speed;
             this.currentSprite = this.runL;
@@ -303,7 +300,6 @@ pointToLineDistance(point, lineStart, lineEnd) {
             
         this.boundaries();
         
-        // Frame updates (unchanged)
         this.frameTimer++;
         if (this.frameTimer >= this.frameDelay) {
             this.frames++;
@@ -363,7 +359,6 @@ class Platform {
             y: px * sin + py * cos + centerY
         });
 
-        // Get world coordinates of the top left and top right corners
         const start = rotatePoint(-halfWidth, -halfHeight);
         const end = rotatePoint(halfWidth, -halfHeight);
 
@@ -483,7 +478,7 @@ class Barrel {
         this.x = barrelPath[0].x;
         this.y = barrelPath[0].y;
         this.speed = 1;
-        this.pathIndex = 1; // start moving toward second point
+        this.pathIndex = 1;
         this.radius = 8;
         this.width = width;
         this.height = height;
@@ -494,12 +489,6 @@ class Barrel {
     }
 
     draw() {
-        //ctx.beginPath();
-        //ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        //ctx.strokeStyle = 'green'
-        //ctx.fillStyle = "brown";
-        //ctx.fill();
-        //ctx.stroke();
         ctx.drawImage(
             this.image,
             this.width * this.frames,
@@ -527,7 +516,7 @@ class Barrel {
 
         if (this.pathIndex >= barrelPath.length){
             return;
-            } // End of path
+            }
 
         const target = barrelPath[this.pathIndex];
         const dx = target.x - this.x;
@@ -535,12 +524,10 @@ class Barrel {
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist < this.speed) {
-            // Snap to target and advance
             this.x = target.x;
             this.y = target.y;
             this.pathIndex++;
         } else {
-            // Move toward target
             this.x += (dx / dist) * this.speed;
             this.y += (dy / dist) * this.speed;
         }
@@ -564,12 +551,6 @@ class Nut {
     }
 
     draw () {
-        //ctx.beginPath();
-        //ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2)
-        //ctx.strokeStyle = 'yellow'
-        //ctx.lineWidth = 2;
-        //ctx.stroke();
-        //ctx.drawImage(this.image, this.x, this.y)
         ctx.drawImage(
             this.image,
             this.width * this.frames,
@@ -618,11 +599,11 @@ class LaserEyes{
         const currentTime = performance.now();
     
         if (currentTime - this.lastShotTime >= this.fireRate) {
-            // Calculate direction to player
+
             let dx = player.x - this.x;
             let dy = player.y - this.y;
             let magnitude = Math.sqrt(dx * dx + dy * dy);
-            let speed = 2; // Adjust speed as needed
+            let speed = 2;
     
             this.projectiles.push({
                 x: this.x,
@@ -638,28 +619,23 @@ class LaserEyes{
     }
     
     draw() {
-    // Draw projectiles
     for (let i = 0; i < this.projectiles.length; i++) {
         const p = this.projectiles[i];
 
-        // Calculate angle of rotation
         const angle = Math.atan2(p.velocityY, p.velocityX);
 
         ctx.save();
-        ctx.translate(p.x, p.y); // move origin to projectile center
+        ctx.translate(p.x, p.y);
         ctx.rotate(angle);
 
-        // Draw projectile at (0, 0), adjusted so it rotates correctly
         ctx.fillStyle = 'red';
         ctx.fillRect(0, -p.height / 2, p.width, p.height);
 
         ctx.restore();
 
-        // Move projectile
         p.x += p.velocityX;
         p.y += p.velocityY;
 
-        // Remove if off screen
         if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height) {
             this.projectiles.splice(i, 1);
             i--;
@@ -719,10 +695,22 @@ function isColliding(a, b) {
     );
 }
 
+let currentFrameBarrels = 0;
+let frameCounterBarrels = 0;
+const frameDelayBarrels = 160; 
+
+function spawnBarrels() {
+    frameCounterBarrels++;
+    if (frameCounterBarrels >= frameDelayBarrels) {
+        barrels.push(new Barrel(15,15,loadedImages.barrel_img));
+        frameCounterBarrels = 0;
+    }
+
+}
+
 function collideBarrel() {
     for (let i = barrels.length - 1; i >= 0; i--) {
         if (isColliding(player, barrels[i])) {
-            console.log('collide with barrel!');
             barrels.splice(i, 1); // remove barrel
             playerHealth -= 5;
         }
@@ -732,7 +720,6 @@ function collideBarrel() {
 function collideNut() {
     for (let nut of nuts) {
         if (isColliding(player, nut)) {
-            console.log('collide with nut!');
             playerHealth -= 1;
         }
     }
@@ -743,7 +730,6 @@ function collideLaserEyes() {
         const laser = laserEye.projectiles[i];
 
         if (isColliding(player, laser)) {
-            console.log('laser collision');
             laserEye.projectiles.splice(i, 1);
             i--;
             playerHealth -= 6;
@@ -757,7 +743,6 @@ function collideGlass() {
         score += 25;
         playerHealth += 15;
         loadedAudio.sfx_water.play();
-        //console.log('collide!');
         tangDrink.fillLevel = Math.min(tangDrink.fillLevel + 0.34, 1);
         collectibles.push(new Collectible(90, 0, 36, 36, loadedImages.orange, 'orange'));
 
@@ -801,8 +786,7 @@ function gameStats() {
 }
 
 function selectorBox(x, y, width, height, hoverText, changeState) {
-    //ctx.strokeStyle = 'red';
-    //ctx.strokeRect(x, y, width, height); 
+    
     const isHovering = (
         mouse.x > x &&
         mouse.x < x + width &&
@@ -823,10 +807,6 @@ function selectorBox(x, y, width, height, hoverText, changeState) {
         return true;
     }
 }
-
-setInterval(() => {
-    barrels.push(new Barrel(15,15,loadedImages.barrel_img));
-}, 3000);
 
 function gameLoop() {
     if (gameState === "startScreen") {
@@ -891,9 +871,9 @@ function preIntroScreen() {
     frameCounterIntro++;
     if (frameCounterIntro >= frameDelayIntro) {
         frameCounterIntro = 0;
-        currentFrameIntro = (currentFrameIntro + 1) % introImages.length; // Loop through frames
+        currentFrameIntro = (currentFrameIntro + 1) % introImages.length;
     }
-    // Draw current frame
+
     ctx.drawImage(introImages[currentFrameIntro], 35, 35);
 
     ctx.font = '20px pixelPurl';
@@ -950,30 +930,16 @@ function gameScreen() {
 
     player.checkCollectibleCollision(collectibles, collectedOrange);
     tangDrink.draw();
-
-    
-
-        // Draw path (for debugging)
-/*
-    ctx.beginPath();
-    ctx.moveTo(barrelPath[0].x, barrelPath[0].y);
-    for (let i = 1; i < barrelPath.length; i++) {
-        ctx.lineTo(barrelPath[i].x, barrelPath[i].y);
-    }
-    ctx.strokeStyle = "lightgray";
-    ctx.stroke();
-*/
-
-    // Update and draw barrels
   
     for (let barrel of barrels) {
         barrel.update();
         if (barrel.pathIndex >= barrelPath.length){
             score += 2;
             barrels.shift();
-        } // End of path
+        }
     }
     enemySprite1.update();
+    spawnBarrels();
     collideBarrel();
     gameStats();
 
@@ -1031,9 +997,10 @@ function gameScreen2() {
         if (barrel.pathIndex >= barrelPath.length){
             score += 2;
             barrels.shift();
-            } // End of path
+            }
     }
     enemySprite2.update();
+    spawnBarrels();
     collideBarrel();
     collideNut();
     gameStats();
@@ -1090,12 +1057,12 @@ function gameScreen3() {
         if (barrel.pathIndex >= barrelPath.length){
             score += 2;
             barrels.shift();
-        } // End of path
+        }
     }
     enemySprite3.update();
     
     laserEye.update();
-
+    spawnBarrels();
     collideBarrel();
     collideLaserEyes();
     gameStats();
@@ -1127,8 +1094,6 @@ function gameOverScreen() {
     ctx.fillText("HIT P TO PLAY AGAIN", canvas.width/2, 330)
 
     selectorBox(115,275,135,30, 'PLAY AGAIN???', 'preIntroScreen')
-
-
 }
 
 let imagesLvl1;
@@ -1155,7 +1120,6 @@ function winScreenLvl1() {
         }
     }
 
-    // Draw current frame
     ctx.drawImage(imagesLvl1[currentFrameLvl1], 35, 35);
 
     ctx.font = '20px pixelPurl';
@@ -1196,7 +1160,7 @@ function winScreenLvl2() {
             currentFrameLvl2++;
         }
     }
-    // Draw current frame
+
     ctx.drawImage(imagesLvl2[currentFrameLvl2], 35, 35);
 
     ctx.font = '20px pixelPurl';
@@ -1228,19 +1192,15 @@ function winScreen() {
         loadedAudio.voice10.play();
     }
     
-
-    // Always increment frameCounterWin
     frameCounterWin++;
 
-    // Advance frames if not at the end
     if (currentFrameWin < imagesWin.length - 1) {
         if (frameCounterWin >= frameDelayWin) {
             frameCounterWin = 0;
             currentFrameWin++;
         }
     } else {
-        // On last frame, wait a bit before showing end screen
-        if (frameCounterWin >= frameDelayWin) { // hold last frame longer
+        if (frameCounterWin >= frameDelayWin) {
             voiceCounterWin = 0;
             gameState = 'endScreen';
             voicePlayed = false;
@@ -1248,7 +1208,6 @@ function winScreen() {
         }
     }
 
-    // Draw current frame
     ctx.drawImage(imagesWin[currentFrameWin], 35, 35);
 }
 
@@ -1421,6 +1380,7 @@ document.addEventListener('keydown', (e) => {
             player.y = 290;
             barrels = [];
             collectedOrange = [];
+            nuts = [];
             tangDrink.fillLevel = 0;
             loadedAudio.spacemusic.pause();
             loadedAudio.spacemusic.currentTime = 0;
