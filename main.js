@@ -795,7 +795,6 @@ function selectorBox(x, y, width, height, hoverText, changeState) {
     );
 
     if (isHovering) {
-        console.log('hover')
         ctx.fillStyle = 'white';
         ctx.font = '20px pixelPurl';
         ctx.fillText(hoverText, mouse.x, mouse.y);
