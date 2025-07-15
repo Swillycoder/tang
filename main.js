@@ -11,7 +11,7 @@ canvas.height = CANVAS_HEIGHT;
 canvas.style.width = `${CANVAS_WIDTH * SCALE}px`;
 canvas.style.height = `${CANVAS_HEIGHT * SCALE}px`;
 
-function drawLoadingScreen(progress, total, progressB, totalB) {
+function drawLoadingScreen(progress, total) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'black';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
