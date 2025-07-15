@@ -11,6 +11,29 @@ canvas.height = CANVAS_HEIGHT;
 canvas.style.width = `${CANVAS_WIDTH * SCALE}px`;
 canvas.style.height = `${CANVAS_HEIGHT * SCALE}px`;
 
+function drawLoadingScreen(progress, total, progressB, totalB) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = 'green';
+    ctx.font = '30px pixelPurl';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Loading Images... ${progress}/${total}`, canvas.width / 2, canvas.height / 2);
+}
+
+function drawLoadingScreenAudio(progressB, totalB) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = 'green';
+    ctx.font = '30px pixelPurl';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Loading Audio... ${progressB}/${totalB}`, canvas.width / 2, canvas.height / 2);
+}
+
+
 const images = {
     run_r: 'https://raw.githubusercontent.com/Swillycoder/tang/main/run_r.png',
     run_l: 'https://raw.githubusercontent.com/Swillycoder/tang/main/run_l.png',
@@ -64,10 +87,15 @@ const loadImage = (src) => {
 
 async function loadAllImages(imageSources) {
     const loadedImages = {};
+    const total = Object.keys(imageSources).length;
+    let progress = 0;
+
     for (const [key, src] of Object.entries(imageSources)) {
         try {
             loadedImages[key] = await loadImage(src);
+            progress++;
             console.log(`${key} loaded successfully`);
+            drawLoadingScreen(progress, total);
         } catch (error) {
             console.error(error);
         }
@@ -106,16 +134,20 @@ const loadAudio = (src) => {
 };
 
 async function loadAllAudio(audioSources) {
-  const result = {};
-  for (const [key, src] of Object.entries(audioSources)) {
-    try {
-      result[key] = await loadAudio(src);
-      console.log(`${key} audio loaded`);
-    } catch (error) {
-      console.error(error);
+    const result = {};
+        const totalB = Object.keys(audioSources).length;
+        let progressB = 0;
+    for (const [key, src] of Object.entries(audioSources)) {
+        try {
+        result[key] = await loadAudio(src);
+        progressB++;
+        console.log(`${key} audio loaded`);
+        drawLoadingScreenAudio(progressB, totalB);
+        } catch (error) {
+        console.error(error);
+        }
     }
-  }
-  return result;
+    return result;
 }
 
 class Player {
@@ -1222,9 +1254,11 @@ function endScreen () {
 }
 
 (async () => {
+    drawLoadingScreen(0, Object.keys(images).length);
+    drawLoadingScreen(0, Object.keys(audiofiles).length);
     console.log("Loading images...");
     loadedImages = await loadAllImages(images);
-    loadedAudio = await loadAllAudio(audiofiles)
+    loadedAudio = await loadAllAudio(audiofiles);
     console.log("All images loaded!");
 
     player = new Player(50, 290, 36,36, loadedImages.stand_r, loadedImages.stand_l,
