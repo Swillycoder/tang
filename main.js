@@ -27,7 +27,6 @@ function drawLoadingScreen(progress, total) {
     ctx.fillRect(canvas.width/2 - total/2*3, canvas.height/2 + 30, progress *3, 25)
     ctx.strokeRect(canvas.width/2 - total*3/2, canvas.height/2 + 30, total *3, 25)
     
-
     ctx.fillStyle = 'white';
     ctx.font = '30px pixelPurl';
     ctx.textAlign = 'center';
@@ -50,7 +49,6 @@ function drawLoadingScreenAudio(progressB, totalB) {
     ctx.fillRect(canvas.width/2 - totalB/2*5, canvas.height/2 + 30, progressB *5, 25)
     ctx.strokeRect(canvas.width/2 - totalB*5/2, canvas.height/2 + 30, totalB *5, 25)
     
-
     ctx.fillStyle = 'white';
     ctx.font = '30px pixelPurl';
     ctx.textAlign = 'center';
