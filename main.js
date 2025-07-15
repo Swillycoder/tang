@@ -646,7 +646,7 @@ class LaserEyes{
         this.y = y;
         this.projectiles = [];
         this.lastShotTime = performance.now();
-        this.fireRate = 1000;
+        this.fireRate = 1200;
     }
 
         shoot(player) { 
@@ -786,7 +786,7 @@ function collideLaserEyes() {
         if (isColliding(player, laser)) {
             laserEye.projectiles.splice(i, 1);
             i--;
-            playerHealth -= 6;
+            playerHealth -= 5;
         }
     }
 }
