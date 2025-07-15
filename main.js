@@ -20,6 +20,18 @@ function drawLoadingScreen(progress, total) {
     ctx.font = '30px pixelPurl';
     ctx.textAlign = 'center';
     ctx.fillText(`Loading Images... ${progress}/${total}`, canvas.width / 2, canvas.height / 2);
+    
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 3;
+    ctx.fillStyle = 'green';
+    ctx.fillRect(canvas.width/2 - total/2*3, canvas.height/2 + 30, progress *3, 25)
+    ctx.strokeRect(canvas.width/2 - total*3/2, canvas.height/2 + 30, total *3, 25)
+    
+
+    ctx.fillStyle = 'white';
+    ctx.font = '30px pixelPurl';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${Math.round((progress / total) * 100)}%`, canvas.width / 2, canvas.height / 2 + 50);
 }
 
 function drawLoadingScreenAudio(progressB, totalB) {
@@ -31,6 +43,18 @@ function drawLoadingScreenAudio(progressB, totalB) {
     ctx.font = '30px pixelPurl';
     ctx.textAlign = 'center';
     ctx.fillText(`Loading Audio... ${progressB}/${totalB}`, canvas.width / 2, canvas.height / 2);
+
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 3;
+    ctx.fillStyle = 'green';
+    ctx.fillRect(canvas.width/2 - totalB/2*5, canvas.height/2 + 30, progressB *5, 25)
+    ctx.strokeRect(canvas.width/2 - totalB*5/2, canvas.height/2 + 30, totalB *5, 25)
+    
+
+    ctx.fillStyle = 'white';
+    ctx.font = '30px pixelPurl';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${Math.round((progressB / totalB) * 100)}%`, canvas.width / 2, canvas.height / 2 + 50);
 }
 
 
